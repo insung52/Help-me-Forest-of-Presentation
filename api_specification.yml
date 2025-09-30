@@ -67,6 +67,8 @@ paths:
     post:
       summary: 로그인
       description: 이메일과 비밀번호로 로그인하고 JWT Access Token 및 Refresh Token 발급
+      security:
+        - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -160,3 +162,216 @@ paths:
                   message:
                     type: string
                     example: 로그아웃 성공
+  /users/me:
+    get:
+      summary: 회원 정보 조회
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 사용자 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: string
+                    example: "user01"
+                  name:
+                    type: string
+                    example: "홍길동"
+                  email:
+                    type: string
+                    example: "user01@example.com"
+                  school:
+                    type: string
+                    example: "ABC 고등학교"
+                  age:
+                    type: integer
+                    example: 20
+    patch:
+      summary: 회원 정보 수정
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "홍길동"
+                school:
+                  type: string
+                  example: "ABC 고등학교"
+                age:
+                  type: integer
+                  example: 21
+      responses:
+        '200':
+          description: 회원 정보 수정 완료
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "회원 정보가 업데이트되었습니다."
+    delete:
+      summary: 회원 탈퇴
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 회원 탈퇴 완료
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "회원 탈퇴가 완료되었습니다."
+
+  /sessions/start:
+    post:
+      summary: 세션 시작
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                topic:
+                  type: string
+                  example: "발표 주제"
+                script:
+                  type: string
+                  example: "발표 원고"
+      responses:
+        '200':
+          description: 세션 시작 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                    example: "abcd1234"
+                  message:
+                    type: string
+                    example: "세션 시작"
+
+  /sessions/{session_id}/end:
+    post:
+      summary: 세션 종료 (사후 피드백)
+      parameters:
+        - name: session_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: "abcd1234"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spoken_text:
+                  type: string
+                  example: "실제 발화 텍스트"
+      responses:
+        '200':
+          description: 사후 피드백 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  scores:
+                    type: object
+                    properties:
+                      pronunciation:
+                        type: integer
+                        example: 85
+                      content_analysis:
+                        type: integer
+                        example: 90
+                      expression:
+                        type: integer
+                        example: 80
+                      posture:
+                        type: integer
+                        example: 75
+                      final_score:
+                        type: integer
+                        example: 83
+                  feedback_text:
+                    type: string
+                    example: "발음은 정확했으나 시선 처리와 자세가 조금 불안정했습니다."
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RealTimeFeature:
+      type: object
+      properties:
+        speechRate:
+          type: number
+          example: 120
+          description: 말 속도 (단어/분)
+        volumeStability:
+          type: number
+          example: 0.8
+        gaze:
+          type: object
+          properties:
+            x:
+              type: number
+              example: 0.5
+            y:
+              type: number
+              example: 0.4
+        posture:
+          type: object
+          properties:
+            tilt:
+              type: number
+              example: 5
+            sway:
+              type: number
+              example: 2
+
+    RealTimeFeedback:
+      type: object
+      properties:
+        scores:
+          type: object
+          properties:
+            speechRate:
+              type: number
+              example: 85
+            volumeStability:
+              type: number
+              example: 90
+            gazeStability:
+              type: number
+              example: 80
+            postureStability:
+              type: number
+              example: 75
+        feedbackText:
+          type: string
+          example: "말 속도와 시선이 안정적이지만 자세가 약간 흔들립니다."
