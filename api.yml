@@ -1,0 +1,162 @@
+openapi: 3.0.3
+info:
+  title: 실시간 발표 피드백 서비스 API
+  version: 1.0.0
+  description: JWT + Refresh Token 기반 인증을 사용하는 로그인/회원가입 API 명세서
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+paths:
+  /auth/signup:
+    post:
+      summary: 회원가입
+      description: 사용자 정보를 등록하여 계정을 생성
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: 홍길동
+                email:
+                  type: string
+                  format: email
+                  example: test@example.com
+                password:
+                  type: string
+                  format: password
+                  example: "Password123!"
+                school:
+                  type: string
+                  example: 광운대학교
+                age:
+                  type: integer
+                  example: 23
+      responses:
+        '201':
+          description: 계정 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 회원가입 성공
+        '409':
+          description: 이메일 중복 에러
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이미 사용 중인 이메일입니다.
+
+  /auth/login:
+    post:
+      summary: 로그인
+      description: 이메일과 비밀번호로 로그인하고 JWT Access Token 및 Refresh Token 발급
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: test@example.com
+                password:
+                  type: string
+                  format: password
+                  example: "Password123!"
+      responses:
+        '200':
+          description: 로그인 성공
+          headers:
+            Set-Cookie:
+              description: Refresh Token 쿠키(HttpOnly, Secure)
+              schema:
+                type: string
+                example: refreshToken=abcdef12345; HttpOnly; Secure
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  message:
+                    type: string
+                    example: 로그인 성공
+        '401':
+          description: 인증 실패
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 이메일 또는 비밀번호가 올바르지 않습니다.
+
+  /auth/refresh:
+    post:
+      summary: Access Token 갱신
+      description: Refresh Token 쿠키를 사용하여 새 Access Token 발급
+      responses:
+        '200':
+          description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  message:
+                    type: string
+                    example: Access Token 갱신 성공
+        '401':
+          description: Refresh Token 유효하지 않음
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Refresh Token 만료 또는 유효하지 않음
+
+  /auth/logout:
+    post:
+      summary: 로그아웃
+      description: Refresh Token 무효화 및 클라이언트 쿠키 삭제
+      responses:
+        '200':
+          description: 로그아웃 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: 로그아웃 성공
