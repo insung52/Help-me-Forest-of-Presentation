@@ -5,7 +5,7 @@ const userService = require("../services/userService");
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, school, age } = req.body;
+    const { name, email, password} = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({ message: "이메일, 비밀번호, 닉네임은 필수입니다." });
@@ -16,8 +16,7 @@ exports.register = async (req, res) => {
       name,
       email,
       password,
-      school,
-      age,
+
     });
     // frontend 에 201, 메세지, user_id, accesstoken, refreshtoken 리턴
     res.status(201).json({
