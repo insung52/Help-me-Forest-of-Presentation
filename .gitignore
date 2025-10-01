@@ -1,0 +1,24 @@
+# node_modules (라이브러리들, 용량 크고 재설치 가능)
+node_modules/
+
+# 환경 변수 파일 (API 키 등 민감 정보)
+.env
+
+# 로그 파일
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 빌드 결과물 (Webpack, Next.js, React 등)
+dist/
+build/
+
+# 캐시
+.cache/
+.tmp/
+
+# OS/IDE별 불필요한 파일
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
