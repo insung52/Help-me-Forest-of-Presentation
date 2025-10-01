@@ -5,11 +5,11 @@ info:
   description: JWT + Refresh Token 기반 인증을 사용하는 로그인/회원가입 API 명세서
 
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:5000
     description: Local development server
 
 paths:
-  /auth/signup:
+  /users/register:
     post:
       summary: 회원가입
       description: 사용자 정보를 등록하여 계정을 생성
@@ -38,15 +38,24 @@ paths:
                 
       responses:
         '201':
-          description: 계정 생성 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 회원가입 성공
+            description: 계정 생성 성공
+            headers:
+              Set-Cookie:
+                description: Refresh Token 쿠키(HttpOnly, Secure)
+                schema:
+                  type: string
+                  example: refreshToken=abcdef12345; HttpOnly; Secure
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    accessToken:
+                      type: string
+                      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    message:
+                      type: string
+                      example: 회원가입 성공
         '409':
           description: 이메일 중복 에러
           content:
@@ -117,6 +126,8 @@ paths:
     post:
       summary: Access Token 갱신
       description: Refresh Token 쿠키를 사용하여 새 Access Token 발급
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: 토큰 갱신 성공
@@ -145,6 +156,8 @@ paths:
   /auth/logout:
     post:
       summary: 로그아웃
+      security:
+        - bearerAuth: []
       description: Refresh Token 무효화 및 클라이언트 쿠키 삭제
       responses:
         '200':
@@ -157,6 +170,7 @@ paths:
                   message:
                     type: string
                     example: 로그아웃 성공
+  
   /users/me:
     get:
       summary: 회원 정보 조회
@@ -164,21 +178,21 @@ paths:
         - bearerAuth: []
       responses:
         '200':
-          description: 사용자 정보 조회 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user_id:
-                    type: string
-                    example: "user01"
-                  name:
-                    type: string
-                    example: "홍길동"
-                  email:
-                    type: string
-                    example: "user01@example.com"
+            description: 사용자 정보 조회 성공
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    user_id:
+                      type: string
+                      example: "user01"
+                    name:
+                      type: string
+                      example: "홍길동"
+                    email:
+                      type: string
+                      example: "user01@example.com"
                   
     patch:
       summary: 회원 정보 수정
