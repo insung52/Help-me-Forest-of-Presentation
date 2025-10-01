@@ -35,12 +35,7 @@ paths:
                   type: string
                   format: password
                   example: "Password123!"
-                school:
-                  type: string
-                  example: 광운대학교
-                age:
-                  type: integer
-                  example: 23
+                
       responses:
         '201':
           description: 계정 생성 성공
@@ -184,12 +179,7 @@ paths:
                   email:
                     type: string
                     example: "user01@example.com"
-                  school:
-                    type: string
-                    example: "ABC 고등학교"
-                  age:
-                    type: integer
-                    example: 20
+                  
     patch:
       summary: 회원 정보 수정
       security:
@@ -204,12 +194,7 @@ paths:
                 name:
                   type: string
                   example: "홍길동"
-                school:
-                  type: string
-                  example: "ABC 고등학교"
-                age:
-                  type: integer
-                  example: 21
+
       responses:
         '200':
           description: 회원 정보 수정 완료
@@ -247,12 +232,28 @@ paths:
             schema:
               type: object
               properties:
+                mode:
+                  type: string
+                  example: "practice"  # or "test"
+                school:
+                  type: string
+                  example: "대학생"
+                subject:
+                  type: string
+                  example: "과학"
                 topic:
                   type: string
                   example: "발표 주제"
+                feedbacktype:
+                  type: integer
+                  example: 1  # or 2, 3
+                timelimit:
+                  type: integer
+                  example: 10  # 발표 시간 제한 (분)
                 script:
                   type: string
-                  example: "발표 원고"
+                  example: "발표 원고"  # 선택 사항
+
       responses:
         '200':
           description: 세션 시작 성공
