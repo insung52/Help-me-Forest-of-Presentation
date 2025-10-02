@@ -32,3 +32,11 @@ exports.revokeToken = async (refreshToken) => {
   const sql = `UPDATE AuthToken SET revoked = true WHERE refresh_token = ?`;
   await pool.query(sql, [refreshToken]);
 };
+
+// 회원 탈퇴시, 회원의 refreshtoken이 유효한 경우 삭제
+
+exports.deleteTokenByUserId = async(userId) => {
+  const sql = `DELETE FROM AuthToken WHERE user_id = ?`;
+  const [result] = await pool.query(sql, [userId]);
+  return result.affectedRows >0 ;
+}

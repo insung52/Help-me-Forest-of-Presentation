@@ -3,6 +3,7 @@
 // 그러므로, userService 변수를 선언하고 초기화
 const userService = require("../services/userService");
 
+
 exports.register = async (req, res) => {
   try {
     const { name, email, password} = req.body;
@@ -26,5 +27,37 @@ exports.register = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message || "회원가입 실패" });
+  }
+};
+
+
+
+exports.getMe = async (req, res) => {
+  try {
+    const user = await userService.getMe(req.user.user_id);
+    res.json(user); // return  {user_id, name, email}
+  } catch (error) {
+    res.status(404).json({ message: error.message});
+  }
+};
+
+exports.updateMe = async (req, res) => {
+  try {
+    const updatedUser = await userService.updateMe(req.user.user_id,req.body.name);
+    res.json({
+      message: "회원 정보가 업데이트되었습니다.",
+      ...updatedUser, // { user_id, name, email } 리턴
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.deleteMe = async (req, res) => {
+  try {
+    await userService.deleteMe(req.user.user_id);
+    res.json({ message: "회원 탈퇴가 완료되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류" });
   }
 };
